@@ -1,0 +1,362 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// Структура для пользователей
+struct AccountStruct {
+    string login;
+    string password;
+    int meaning;
+};
+ 
+// Структура для тренировок
+struct EntruntsStruct {
+    string name;
+    int intensive;
+    float time;
+    string exercise[7]; // Увеличен размер массива
+    string food[5]; // Увеличен размер массива
+};
+
+// функция для сортировки по имени
+void SortByName(EntruntsStruct trainers[], int count) {
+    for (int i = 1; i < count; ++i) {
+        EntruntsStruct key = trainers[i];
+        int j = i - 1;
+        while (j >= 0 && trainers[j].name > key.name) {
+            trainers[j + 1] = trainers[j];
+            j = j - 1;
+        }
+        trainers[j + 1] = key;
+    }
+}
+
+// функция для сортировки по интенсивности
+void SortByIntensity(EntruntsStruct trainers[], int count) {
+    for (int i = 1; i < count; ++i) {
+        EntruntsStruct key = trainers[i];
+        int j = i - 1;
+        while (j >= 0 && trainers[j].intensive > key.intensive) {
+            trainers[j + 1] = trainers[j];
+            j = j - 1;
+        }
+        trainers[j + 1] = key;
+    }
+}
+
+// функция для поиска тренировки по ее имени
+void SearchTrainingByName(const EntruntsStruct trainers[], int count) {
+    string nameToFind;
+    cout << "Введите название тренировки для поиска: ";
+    cin.ignore();
+    getline(cin, nameToFind);
+
+    bool found = false;
+    for (int i = 0; i < count; ++i) {
+        if (trainers[i].name == nameToFind) {
+            found = true;
+            cout << "Найдена тренировка:" << endl;
+            cout << "Название: " << trainers[i].name << endl;
+            cout << "Интенсивность: " << trainers[i].intensive << endl;
+            cout << "Продолжительность: " << trainers[i].time << " мин" << endl;
+
+            // Вывод упражнений для каждого дня недели
+            cout << "Упражнения по дням недели:" << endl;
+            for (int day = 0; day < 7; ++day) {
+                cout << "Тренировки на ";
+                switch (day) {
+                case 0:
+                    cout << "понедельник: ";
+                    break;
+                case 1:
+                    cout << "вторник: ";
+                    break;
+                case 2:
+                    cout << "среду: ";
+                    break;
+                case 3:
+                    cout << "четверг: ";
+                    break;
+                case 4:
+                    cout << "пятницу: ";
+                    break;
+                case 5:
+                    cout << "субботу: ";
+                    break;
+                case 6:
+                    cout << "воскресенье: ";
+                    break;
+                }
+                cout << trainers[i].exercise[day] << endl;
+            }
+
+            // Вывод питания для каждого приема пищи
+            cout << "Питание по приемам пищи:" << endl;
+            cout << "Завтрак: " << trainers[i].food[0] << endl;
+            cout << "Ланч: " << trainers[i].food[1] << endl;
+            cout << "Обед: " << trainers[i].food[2] << endl;
+            cout << "Полдник: " << trainers[i].food[3] << endl;
+            cout << "Ужин: " << trainers[i].food[4] << endl;
+
+            break; // Найдена тренировка, выходим из цикла
+        }
+    }
+
+    if (!found) {
+        cout << "Тренировка с названием '" << nameToFind << "' не найдена." << endl;
+    }
+}
+
+// функция для сортировки пузырьком по возрастанию врмени
+void BubbleSortByTime(EntruntsStruct trainers[], int count) {
+    for (int i = 0; i < count - 1; ++i) {
+        for (int j = 0; j < count - i - 1; ++j) {
+            if (trainers[j].time > trainers[j + 1].time) {
+                // Обмен местами
+                EntruntsStruct temp = trainers[j];
+                trainers[j] = trainers[j + 1];
+                trainers[j + 1] = temp;
+            }
+        }
+    }
+}
+
+// функция для сортировки по времени
+void SortByTime(EntruntsStruct trainers[], int count) {
+    for (int i = 0; i < count - 1; ++i) {
+        int minIndex = i;
+        for (int j = i + 1; j < count; ++j) {
+            if (trainers[j].time < trainers[minIndex].time) {
+                minIndex = j;
+            }
+        }
+        // Обмен местами
+        EntruntsStruct temp = trainers[minIndex];
+        trainers[minIndex] = trainers[i];
+        trainers[i] = temp;
+    }
+}
+
+// функция для добавления тренировки
+void AddTraining(EntruntsStruct trainers[], int& count) {
+    if (count >= 100) {
+        cout << "Массив тренировок заполнен. Невозможно добавить больше тренировок." << endl;
+        return;
+    }
+
+    EntruntsStruct newTraining;
+
+    cout << "Введите название тренировки: ";
+    cin.ignore();
+    getline(cin, newTraining.name);
+
+    cout << "Введите интенсивность тренировки (от 1 до 10): ";
+    cin >> newTraining.intensive;
+
+    cout << "Введите продолжительность тренировки (в минутах): ";
+    cin >> newTraining.time;
+
+    cout << "Введите упражнения для каждого дня недели (вводите через пробел, для перехода к следующему дню нажмите Enter):" << endl;
+    cin.ignore();
+    for (int i = 0; i < 7; ++i) {
+        cout << "Введите упражнения для " << i + 1 << " дня недели: ";
+        getline(cin, newTraining.exercise[i]);
+    }
+
+    cout << "Введите питание для каждого приема пищи (вводите через пробел, для перехода к следующему приему нажмите Enter):" << endl;
+    for (int i = 0; i < 5; ++i) {
+        cout << "Введите питание для " << i + 1 << " приема пищи: ";
+        getline(cin, newTraining.food[i]);
+    }
+
+    trainers[count++] = newTraining;
+    cout << "Тренировка успешно добавлена!" << endl;
+}
+
+// функция для просмотра всех тренировок
+void ViewAllTrainings(const EntruntsStruct trainers[], int count) {
+    if (count == 0) {
+        cout << "Нет доступных тренировок." << endl;
+        return;
+    }
+
+    cout << "Все доступные тренировки:" << endl;
+    for (int i = 0; i < count; ++i) {
+        cout << "Название: " << trainers[i].name << endl;
+        cout << "Интенсивность: " << trainers[i].intensive << endl;
+        cout << "Продолжительность: " << trainers[i].time << " мин" << endl;
+
+        // Вывод упражнений для каждого дня недели
+        cout << "Упражнения по дням недели:" << endl;
+        for (int day = 0; day < 7; ++day) {
+            cout << "Тренировки на ";
+            switch (day) {
+            case 0:
+                cout << "понедельник: ";
+                break;
+            case 1:
+                cout << "вторник: ";
+                break;
+            case 2:
+                cout << "среду: ";
+                break;
+            case 3:
+                cout << "четверг: ";
+                break;
+            case 4:
+                cout << "пятницу: ";
+                break;
+            case 5:
+                cout << "субботу: ";
+                break;
+            case 6:
+                cout << "воскресенье: ";
+                break;
+            }
+            cout << trainers[i].exercise[day] << endl;
+        }
+
+        // Вывод питания для каждого приема пищи
+        cout << "Питание по приемам пищи:" << endl;
+        cout << "Завтрак: " << trainers[i].food[0] << endl;
+        cout << "Ланч: " << trainers[i].food[1] << endl;
+        cout << "Обед: " << trainers[i].food[2] << endl;
+        cout << "Полдник: " << trainers[i].food[3] << endl;
+        cout << "Ужин: " << trainers[i].food[4] << endl;
+
+        cout << endl;
+    }
+}
+
+// функция для удаления тренировок
+void DeleteTraining(EntruntsStruct trainers[], int& count) {
+    if (count == 0) {
+        cout << "Нет тренировок для удаления." << endl;
+        return;
+    }
+
+    string nameToDelete;
+    cout << "Введите название тренировки для удаления: ";
+    cin >> nameToDelete;
+
+    bool found = false;
+    for (int i = 0; i < count; ++i) {
+        if (trainers[i].name == nameToDelete) {
+            found = true;
+            for (int j = i; j < count - 1; ++j) {
+                trainers[j] = trainers[j + 1];
+            }
+            count--;
+            cout << "Тренировка '" << nameToDelete << "' удалена." << endl;
+            break;
+        }
+    }
+
+    if (!found) {
+        cout << "Тренировка с названием '" << nameToDelete << "' не найдена." << endl;
+    }
+}
+
+// регистрация нового пользователя
+void Registration_by_user() {
+    // Ваш код регистрации пользователя
+}
+
+// вход в качестве пользователя
+void Autorization_by_user() {
+    // Ваш код авторизации пользователя
+}
+
+// регистрация нового пользователя
+void Autorization_by_admin(EntruntsStruct trainers[], int& count) { // Добавляем параметры
+    int adminChoice;
+    cout << "Добро пожаловать в меню администратора!" << endl;
+    do{   
+    cout << "Выберите действие:" << endl;
+    cout << "1. Добавить тренировку" << endl;
+    cout << "2. Удалить тренировку" << endl;
+    cout << "3. Просмотреть все существующие тренировки" << endl;
+    cout << "4. Отсортировать тренировки по времени" << endl;
+    cout << "5. Поиск тренировки по ее имени" << endl;
+    cout << "6. Выйти из меню администратора" << endl;
+
+    cin >> adminChoice;
+
+    switch (adminChoice) {
+        
+    case 1:
+        AddTraining(trainers, count); // Используем массив trainers
+        break;
+    case 2:
+        DeleteTraining(trainers, count); // Вызов метода удаления тренировки
+        break;
+    case 3:
+        ViewAllTrainings(trainers, count); // Вызов метода просмотра всех тренировок
+        break;
+    case 4:
+        SortByTime(trainers, count); // Вызов метода сортировки по времени
+        cout << "Тренировки успешно отсортированы по времени." << endl;
+        break;
+    case 5:
+        SearchTrainingByName(trainers, count);
+        break;
+    case 6:
+        cout << "Выход из меню администратора" << endl;
+        break;
+    default:
+        cout << "Некорректный выбор. Попробуйте снова." << endl;
+        break;
+        } 
+    } while (adminChoice != 6);
+}
+
+// вход в качестве пользователя
+void Registration_by_admin() {
+    // Ваш код авторизации администратора
+}
+
+int main() {
+    AccountStruct mans[100]; // Массив в который записываются все пользователи и админы в программе
+    EntruntsStruct trainers[100]; // Массив в который записываются все добавленные тренировки
+    int count = 0; // Счетчик тренировок
+
+   
+
+    setlocale(LC_ALL, "RU");
+
+    int choice;
+    cout << "Вас приветствует программа <<Личный фитнес тренер>>, пожалуйста зарегестрируйтесь или войдите в свой аккаунт " << endl;
+    cout << "1 - войти в существующий аккаунт (в качестве администратора) " << endl;
+    cout << "2 - войти в существующий аккаунт (в качестве пользователя) " << endl;
+    cout << "3 - создать новый аккаунт администратора  " << endl;
+    cout << "4 - создать новый аккаунт пользователя  " << endl;
+    cout << "5 - выйти из программы  " << endl;
+
+    // Меню входа в программу
+    do {
+        cin >> choice;
+        switch (choice) {
+        case 1:
+            Autorization_by_admin(trainers, count); // Передаем массив и счетчик
+            break;
+        case 2:
+            // Авторизация пользователя
+            break;
+        case 3:
+            // Регистрация нового администратора
+            break;
+        case 4:
+            // Регистрация нового пользователя
+            break;
+        case 5:
+            cout << "Программа завершила свою работу";
+            break;
+        default:
+            cout << "Выбор сделан некорректно. Попробуйте еще раз." << endl;
+            break;
+        }
+    } while (choice != 5);
+
+    return 0;
+}
